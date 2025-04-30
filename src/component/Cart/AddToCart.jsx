@@ -1,42 +1,39 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-const baseurl = import.meta.env.VITE_BASE_URL
+const baseurl = import.meta.env.VITE_BASE_URL;
 
+function AddToCart() {
+  const cartitem = useSelector((state) => state.cart.item);
+  const [getItem, setGetItem] = useState([]);
 
-function AddToCart(){
-    const cartitem = useSelector((state)=>state.cart.item)
-return(
+  useEffect(() => {
+    if (cartitem.length > 0) {
+      const updatedCart = [...cartitem];
+      localStorage.setItem("product", JSON.stringify(updatedCart));
+      setGetItem(updatedCart);
+    } else {
+      const stored = JSON.parse(localStorage.getItem("product")) || [];
+      setGetItem([...stored]);
+    }
+  }, [cartitem]);
+
+  return (
     <>
-    
-
-     {cartitem.map((product,index)=>(
-        
-        <div key={index} className="col-md-4 mb-4">
-        <div className="card h-100 text-center">
-          <img
-            src={`${baseurl}/uploads/${product.image}`}
-            alt={product.title}
-            className="card-img-top "
-            style={{ height: '300px' }}
-          />
-          <div className="card-body">
-            <p className="card-text">Category: {product.Sub_Category}</p>
-            <h5 className="card-title">{product.title}</h5>
-            <p className="card-text">{product.description}</p>
-            <p className="card-text fw-bold">Price: ${product.price}</p>
-            
+      {getItem.length === 0 ? (
+        <p>No items in cart</p>
+      ) : (
+        getItem.map((item, index) => (
+          <div key={index} className="container-fluid w-75 border rounded" >
+            {/* <h5>{item.title}</h5>
+            <img src={`${baseurl}/uploads/${item.image}`} alt="" style={{height:"200px"}}/> */}
+            <span> <img src={`${baseurl}/uploads/${item.image}`} alt="" style={{height:"200px"}}/> </span>
+            <span><strong>{item.title}</strong></span>
           </div>
-
-        </div>
-      </div>
-        
-     ))}
-      
+        ))
+      )}
     </>
-)
-
+  );
 }
-
 
 export default AddToCart;
